@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chikayati - Gestion des Plaintes Citoyennes</title>
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --radius: 8px;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+        }
+
+        /* ===== RESET & BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* ===== LAYOUT ===== */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: linear-gradient(135deg, var(--primary), #1a2530);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .commune-name {
+            font-size: 1.1rem;
+            font-weight: normal;
+            opacity: 0.9;
+        }
+
+        /* ===== NAVIGATION ===== */
+        nav {
+            background: linear-gradient(to right, var(--secondary), #2980b9);
+            box-shadow: var(--shadow);
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            padding: var(--spacing-md) var(--spacing-lg);
+            position: relative;
+            transition: var(--transition);
+        }
+
+        nav ul li a {
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        nav ul li:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        nav ul li a:hover {
+            transform: translateY(-2px);
+        }
+
+        nav ul li.active {
+            background-color: rgba(255, 255, 255, 0.25);
+        }
+
+        nav ul li.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: white;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            padding: var(--spacing-xl) 0;
+        }
+
+        .section-title {
+            margin-bottom: var(--spacing-lg);
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--secondary);
+            border-radius: 2px;
+        }
+
+        /* ===== WELCOME SECTION ===== */
+        .welcome-section {
+            background: white;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: var(--spacing-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+        }
+
+        .welcome-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            color: var(--secondary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
+        }
+
+        .feature-card {
+            background: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--secondary);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-md);
+            color: var(--secondary);
+        }
+
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        /* ===== FORM SECTION ===== */
+        .form-section {
+            background: white;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--secondary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .required-field::after {
+            content: " *";
+            color: var(--accent);
+        }
+
+        /* ===== TABLE SECTION ===== */
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--spacing-md);
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #fef9e7;
+            color: var(--warning);
+        }
+
+        .status-in-progress {
+            background-color: #ebf5fb;
+            color: var(--secondary);
+        }
+
+        .status-resolved {
+            background-color: #eafaf1;
+            color: var(--success);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background-color: #219653;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        /* ===== FILE UPLOAD ===== */
+        .file-upload {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .file-list {
+            margin-top: var(--spacing-md);
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: #f1f8fe;
+            border-radius: var(--radius);
+            border: 1px dashed #bde0fe;
+        }
+
+        .file-item a {
+            color: var(--secondary);
+            margin-left: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .file-item a:hover {
+            text-decoration: underline;
+        }
+
+        .file-item button {
+            background: none;
+            border: none;
+            color: var(--accent);
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* ===== MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(3px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 700px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            animation: modalOpen 0.4s ease;
+        }
+
+        @keyframes modalOpen {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            background: linear-gradient(to right, var(--primary), var(--dark));
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: var(--spacing-lg);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        /* ===== STATS ===== */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-md);
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: var(--spacing-lg);
+            text-align: center;
+            border-top: 4px solid var(--secondary);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: var(--spacing-sm) 0;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin: var(--spacing-md) 0;
+        }
+
+        .footer-links a {
+            color: #ecf0f1;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: var(--spacing-sm);
+                text-align: center;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+            }
+
+            nav ul li {
+                padding: 10px;
+            }
+
+            .welcome-section,
+            .form-section,
+            .table-container {
+                padding: var(--spacing-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span class="logo-icon">📋</span>
+            <div>
+                <div class="logo-text">Chikayati</div>
+                <div class="commune-name" id="commune-name">Commune de Khénifra</div>
+            </div>
+        </div>
+    </header>
+    
+    <nav>
+        <ul>
+            <li class="active"><a href="#" onclick="showSection('accueil')"><span>🏠</span> Accueil</a></li>
+            <li><a href="#" onclick="showSection('deposer-plainte')"><span>📝</span> Déposer une Plainte</a></li>
+            <li><a href="#" onclick="showSection('consulter-plaintes')"><span>🔍</span> Consulter les Plaintes</a></li>
+            <li><a href="#" onclick="showSection('inscription')"><span>👤</span> Inscription</a></li>
+            <li><a href="#" onclick="showSection('administration')"><span>⚙️</span> Administration</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container main-content">
+        <!-- Section Accueil -->
+        <section id="accueil-section">
+            <div class="welcome-section">
+                <div class="welcome-content">
+                    <div class="welcome-icon">🏡</div>
+                    <h1>Bienvenue sur Chikayati</h1>
+                    <p>Votre plateforme numérique pour déposer et suivre vos plaintes auprès de la Commune. Nous nous engageons à traiter vos préoccupations avec diligence et transparence.</p>
+                </div>
+            </div>
+            
+            <div class="features">
+                <div class="feature-card" onclick="showSection('deposer-plainte')">
+                    <div class="feature-icon">📝</div>
+                    <h3>Déposer une Plainte</h3>
+                    <p>Signalez un problème ou déposez une plainte concernant les services municipaux.</p>
+                    <button class="btn">Commencer</button>
+                </div>
+                
+                <div class="feature-card" onclick="showSection('consulter-plaintes')">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Consulter les Plaintes</h3>
+                    <p>Consultez le registre public des plaintes et leur état de traitement.</p>
+                    <button class="btn">Consulter</button>
+                </div>
+                
+                <div class="feature-card" onclick="showSection('inscription')">
+                    <div class="feature-icon">👤</div>
+                    <h3>S'inscrire</h3>
+                    <p>Créez votre compte pour accéder à tous les services en ligne.</p>
+                    <button class="btn">S'inscrire</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section Déposer une Plainte -->
+        <section id="deposer-plainte-section" class="hidden">
+            <div class="form-section">
+                <h2 class="section-title">Formulaire de Plainte</h2>
+                
+                <form id="plainte-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nom" class="required-field">Nom complet</label>
+                            <input type="text" id="nom" name="nom" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="adresse" class="required-field">Adresse</label>
+                            <input type="text" id="adresse" name="adresse" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="telephone" class="required-field">Téléphone</label>
+                            <input type="tel" id="telephone" name="telephone" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cin" class="required-field">Numéro CIN</label>
+                            <input type="text" id="cin" name="cin" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="date-depot" class="required-field">Date de dépôt</label>
+                            <input type="date" id="date-depot" name="date-depot" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="type-plainte" class="required-field">Type de plainte</label>
+                            <select id="type-plainte" name="type-plainte" required>
+                                <option value="">Sélectionnez le type</option>
+                                <option value="Routière">Routière</option>
+                                <option value="Espace vert">Espace vert</option>
+                                <option value="Éclairage">Éclairage</option>
+                                <option value="Déchets">Déchets</option>
+                                <option value="Eau">Eau</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description" class="required-field">Description détaillée de la plainte</label>
+                        <textarea id="description" name="description" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date-inspection">Date d'inspection souhaitée</label>
+                        <input type="date" id="date-inspection" name="date-inspection">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Notes supplémentaires</label>
+                        <textarea id="notes" name="notes"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pieces-jointes">Pièces jointes</label>
+                        <input type="file" id="pieces-jointes" name="pieces-jointes" multiple class="file-upload">
+                        <div class="file-list" id="file-list"></div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Envoyer la Plainte</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        
+        <!-- Section Consulter les Plaintes -->
+        <section id="consulter-plaintes-section" class="hidden">
+            <div class="table-container">
+                <h2 class="section-title">Registre des Plaintes</h2>
+                
+                <input type="text" id="recherche-plaintes" class="search-bar" placeholder="Rechercher dans les plaintes..." onkeyup="filtrerPlaintes()">
+                
+                <table id="table-plaintes">
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>NOM</th>
+                            <th>TYPE</th>
+                            <th>DATE</th>
+                            <th>STATUT</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="plaintes-body">
+                        <!-- Les plaintes seront ajoutées dynamiquement ici -->
+                    </tbody>
+                </table>
+                
+                <!-- Détails d'une plainte (visible quand on clique sur une plainte) -->
+                <div id="plainte-details" class="hidden" style="margin-top: 2rem;">
+                    <h3>Détails de la Plainte</h3>
+                    <div id="detail-content" style="padding: 1rem; background-color: #f9f9f9; border-radius: 8px;"></div>
+                    
+                    <div class="pieces-jointes-section">
+                        <h4 class="pieces-jointes-title">Pièces jointes</h4>
+                        <div id="pieces-jointes-details"></div>
+                    </div>
+                    
+                    <div style="margin-top: 1rem; text-align: center;">
+                        <button class="btn btn-primary" onclick="hidePlainteDetails()">Fermer</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section Inscription -->
+        <section id="inscription-section" class="hidden">
+            <div class="form-section">
+                <h2 class="section-title">Inscription</h2>
+                
+                <form id="inscription-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="inscription-nom" class="required-field">Nom</label>
+                            <input type="text" id="inscription-nom" name="inscription-nom" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="inscription-prenom" class="required-field">Prénom</label>
+                            <input type="text" id="inscription-prenom" name="inscription-prenom" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="inscription-email" class="required-field">Email</label>
+                            <input type="email" id="inscription-email" name="inscription-email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="inscription-password" class="required-field">Mot de passe</label>
+                            <input type="password" id="inscription-password" name="inscription-password" required>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">S'inscrire</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        
+        <!-- Section Administration -->
+        <section id="administration-section" class="hidden">
+            <div class="form-section">
+                <h2 class="section-title">Interface d'Administration</h2>
+                <h3>Panneau d'Administration</h3>
+                <p>Interface réservée aux administrateurs pour la gestion des utilisateurs et le traitement des plaintes.</p>
+                
+                <div class="admin-panel">
+                    <div class="feature-card" onclick="showAdminSubSection('gestion-utilisateurs')">
+                        <div class="feature-icon">👥</div>
+                        <h3>Gestion des Utilisateurs</h3>
+                        <p>Administrer les comptes utilisateurs et les permissions.</p>
+                        <button class="btn">Accéder</button>
+                    </div>
+                    
+                    <div class="feature-card" onclick="showAdminSubSection('statistiques')">
+                        <div class="feature-icon">📊</div>
+                        <h3>Statistiques</h3>
+                        <p>Consulter les rapports et statistiques des plaintes.</p>
+                        <button class="btn">Voir</button>
+                    </div>
+                    
+                    <div class="feature-card" onclick="showAdminSubSection('configuration')">
+                        <div class="feature-icon">⚙️</div>
+                        <h3>Configuration</h3>
+                        <p>Paramètres système et configuration de l'application.</p>
+                        <button class="btn">Configurer</button>
+                    </div>
+                </div>
+                
+                <!-- Sous-sections de l'administration -->
+                <div id="gestion-utilisateurs-subsection" class="hidden" style="margin-top: 2rem;">
+                    <h3>Gestion des Utilisateurs</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Rôle</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="utilisateurs-body">
+                                <!-- Les utilisateurs seront ajoutés dynamiquement ici -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="statistiques-subsection" class="hidden" style="margin-top: 2rem;">
+                    <h3>Statistiques des Plaintes</h3>
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-plaintes">0</div>
+                            <div class="stat-label">Plaintes totales</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="plaintes-en-attente">0</div>
+                            <div class="stat-label">En attente</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="plaintes-en-cours">0</div>
+                            <div class="stat-label">En cours</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="plaintes-resolues">0</div>
+                            <div class="stat-label">Résolues</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="configuration-subsection" class="hidden" style="margin-top: 2rem;">
+                    <h3>Configuration du Système</h3>
+                    <form id="config-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="commune-config">Nom de la Commune</label>
+                                <input type="text" id="commune-config" name="commune-config">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="theme-config">Thème de couleur</label>
+                                <select id="theme-config" name="theme-config">
+                                    <option value="default">Défaut (Bleu)</option>
+                                    <option value="green">Vert</option>
+                                    <option value="red">Rouge</option>
+                                    <option value="purple">Violet</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center" style="margin-top: 1.5rem;">
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                            <button type="button" class="btn" onclick="resetAdminSubSections()">Retour</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Modal pour modifier une plainte -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Modifier la Plainte</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-plainte-form">
+                    <input type="hidden" id="edit-plainte-id">
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="edit-type-plainte" class="required-field">Type de plainte</label>
+                            <select id="edit-type-plainte" name="edit-type-plainte" required>
+                                <option value="">Sélectionnez le type</option>
+                                <option value="Routière">Routière</option>
+                                <option value="Espace vert">Espace vert</option>
+                                <option value="Éclairage">Éclairage</option>
+                                <option value="Déchets">Déchets</option>
+                                <option value="Eau">Eau</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit-statut">Statut</label>
+                            <select id="edit-statut" name="edit-statut">
+                                <option value="En attente">En attente</option>
+                                <option value="En cours">En cours</option>
+                                <option value="Résolu">Résolu</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit-date-inspection">Date d'inspection</label>
+                            <input type="date" id="edit-date-inspection" name="edit-date-inspection">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-description" class="required-field">Description détaillée de la plainte</label>
+                        <textarea id="edit-description" name="edit-description" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-notes">Notes supplémentaires</label>
+                        <textarea id="edit-notes" name="edit-notes"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Pièces jointes</label>
+                        <div id="edit-file-list" class="file-list"></div>
+                        <input type="file" id="edit-pieces-jointes" name="edit-pieces-jointes" multiple class="file-upload">
+                    </div>
+                    
+                    <div class="text-center" style="margin-top: 1.5rem;">
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                        <button type="button" class="btn" onclick="closeEditModal()">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="logo-text">Chikayati</div>
+            <p>Système de Gestion des Plaintes Citoyennes</p>
+            <div class="footer-links">
+                <a href="#">À propos</a>
+                <a href="#">Contact</a>
+                <a href="#">Politique de confidentialité</a>
+                <a href="#">Conditions d'utilisation</a>
+            </div>
+            <p>&copy; 2025 Chikayati - Tous droits réservés</p>
+        </div>
+    </footer>
+
+    <script>
+        // Données initiales
+        let plaintes = [
+            {
+                id: 1,
+                nom: "Ahmed Bennani",
+                type: "Routière",
+                date: "2024-05-28",
+                description: "Nid-de-poule sur l'avenue principale causant des dommages aux véhicules",
+                statut: "En cours",
+                inspection: "2024-06-05",
+                piecesJointes: [
+                    { nom: "photo1.jpg", url: "data:image/jpeg;base64,..." },
+                    { nom: "document.pdf", url: "data:application/pdf;base64,..." }
+                ]
+            },
+            {
+                id: 2,
+                nom: "Fatima El Alami",
+                type: "Espace vert",
+                date: "2024-05-25",
+                description: "Manque d'entretien du parc municipal, espaces verts négligés",
+                statut: "En attente",
+                inspection: "Non planifiée",
+                piecesJointes: []
+            },
+            {
+                id: 3,
+                nom: "Omar Tazi",
+                type: "Éclairage",
+                date: "2024-05-20",
+                description: "Lampadaire défectueux dans le quartier résidentiel",
+                statut: "Résolu",
+                inspection: "2024-06-01",
+                piecesJointes: [
+                    { nom: "photo_lampadaire.jpg", url: "data:image/jpeg;base64,..." }
+                ]
+            }
+        ];
+
+        let utilisateurs = [
+            {
+                id: 1,
+                nom: "Admin",
+                prenom: "System",
+                email: "admin@chikayati.ma",
+                role: "Administrateur"
+            },
+            {
+                id: 2,
+                nom: "User",
+                prenom: "Test",
+                email: "user@test.ma",
+                role: "Citoyen"
+            }
+        ];
+
+        // Variables pour gérer l'état
+        let currentUser = null;
+        let selectedFiles = [];
+        let selectedPlainteId = null;
+
+        // Charger les données depuis le localStorage
+        function chargerDonnees() {
+            const plaintesSauvegardees = localStorage.getItem('plaintes');
+            if (plaintesSauvegardees) {
+                plaintes = JSON.parse(plaintesSauvegardees);
+            }
+
+            const utilisateursSauvegardes = localStorage.getItem('utilisateurs');
+            if (utilisateursSauvegardes) {
+                utilisateurs = JSON.parse(utilisateursSauvegardes);
+            }
+
+            const communeSauvegardee = localStorage.getItem('commune');
+            if (communeSauvegardee) {
+                document.getElementById('commune-name').textContent = communeSauvegardee;
+                document.getElementById('commune-config').value = communeSauvegardee;
+            }
+
+            const themeSauvegarde = localStorage.getItem('theme');
+            if (themeSauvegarde) {
+                document.getElementById('theme-config').value = themeSauvegarde;
+                appliquerTheme(themeSauvegarde);
+            }
+
+            // Simuler un utilisateur connecté (pour la démo)
+            currentUser = utilisateurs[0];
+            
+            // Mettre à jour les statistiques
+            updateStats();
+        }
+
+        // Sauvegarder les données dans le localStorage
+        function sauvegarderDonnees() {
+            localStorage.setItem('plaintes', JSON.stringify(plaintes));
+            localStorage.setItem('utilisateurs', JSON.stringify(utilisateurs));
+            localStorage.setItem('commune', document.getElementById('commune-name').textContent);
+            localStorage.setItem('theme', document.getElementById('theme-config').value);
+            
+            // Mettre à jour les statistiques
+            updateStats();
+        }
+
+        // Appliquer le thème sélectionné
+        function appliquerTheme(theme) {
+            const root = document.documentElement;
+            
+            switch(theme) {
+                case 'green':
+                    root.style.setProperty('--primary', '#1e5631');
+                    root.style.setProperty('--secondary', '#4cc359');
+                    root.style.setProperty('--accent', '#ff6b6b');
+                    break;
+                case 'red':
+                    root.style.setProperty('--primary', '#6b2b2b');
+                    root.style.setProperty('--secondary', '#d9534f');
+                    root.style.setProperty('--accent', '#5bc0de');
+                    break;
+                case 'purple':
+                    root.style.setProperty('--primary', '#4a235a');
+                    root.style.setProperty('--secondary', '#8e44ad');
+                    root.style.setProperty('--accent', '#f39c12');
+                    break;
+                default:
+                    root.style.setProperty('--primary', '#2c3e50');
+                    root.style.setProperty('--secondary', '#3498db');
+                    root.style.setProperty('--accent', '#e74c3c');
+            }
+        }
+
+        // Mettre à jour les statistiques
+        function updateStats() {
+            document.getElementById('total-plaintes').textContent = plaintes.length;
+            document.getElementById('plaintes-en-attente').textContent = plaintes.filter(p => p.statut === 'En attente').length;
+            document.getElementById('plaintes-en-cours').textContent = plaintes.filter(p => p.statut === 'En cours').length;
+            document.getElementById('plaintes-resolues').textContent = plaintes.filter(p => p.statut === 'Résolu').length;
+        }
+
+        // Afficher une section et masquer les autres
+        function showSection(sectionId) {
+            document.getElementById('accueil-section').classList.add('hidden');
+            document.getElementById('deposer-plainte-section').classList.add('hidden');
+            document.getElementById('consulter-plaintes-section').classList.add('hidden');
+            document.getElementById('inscription-section').classList.add('hidden');
+            document.getElementById('administration-section').classList.add('hidden');
+            
+            resetAdminSubSections();
+            hidePlainteDetails();
+            
+            // Mettre à jour la navigation active
+            document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active'));
+            switch(sectionId) {
+                case 'accueil':
+                    document.querySelector('nav ul li:nth-child(1)').classList.add('active');
+                    document.getElementById('accueil-section').classList.remove('hidden');
+                    break;
+                case 'deposer-plainte':
+                    document.querySelector('nav ul li:nth-child(2)').classList.add('active');
+                    document.getElementById('deposer-plainte-section').classList.remove('hidden');
+                    // Définir la date du jour par défaut
+                    const aujourdHui = new Date().toISOString().split('T')[0];
+                    document.getElementById('date-depot').value = aujourdHui;
+                    break;
+                case 'consulter-plaintes':
+                    document.querySelector('nav ul li:nth-child(3)').classList.add('active');
+                    document.getElementById('consulter-plaintes-section').classList.remove('hidden');
+                    afficherPlaintes();
+                    break;
+                case 'inscription':
+                    document.querySelector('nav ul li:nth-child(4)').classList.add('active');
+                    document.getElementById('inscription-section').classList.remove('hidden');
+                    break;
+                case 'administration':
+                    document.querySelector('nav ul li:nth-child(5)').classList.add('active');
+                    document.getElementById('administration-section').classList.remove('hidden');
+                    afficherUtilisateurs();
+                    updateStats();
+                    break;
+            }
+        }
+
+        // Afficher une sous-section d'administration
+        function showAdminSubSection(subSectionId) {
+            document.getElementById('gestion-utilisateurs-subsection').classList.add('hidden');
+            document.getElementById('statistiques-subsection').classList.add('hidden');
+            document.getElementById('configuration-subsection').classList.add('hidden');
+            
+            switch(subSectionId) {
+                case 'gestion-utilisateurs':
+                    document.getElementById('gestion-utilisateurs-subsection').classList.remove('hidden');
+                    break;
+                case 'statistiques':
+                    document.getElementById('statistiques-subsection').classList.remove('hidden');
+                    break;
+                case 'configuration':
+                    document.getElementById('configuration-subsection').classList.remove('hidden');
+                    break;
+            }
+        }
+
+        // Réinitialiser les sous-sections d'administration
+        function resetAdminSubSections() {
+            document.getElementById('gestion-utilisateurs-subsection').classList.add('hidden');
+            document.getElementById('statistiques-subsection').classList.add('hidden');
+            document.getElementById('configuration-subsection').classList.add('hidden');
+        }
+
+        // Afficher la liste des plaintes
+        function afficherPlaintes() {
+            const tbody = document.getElementById('plaintes-body');
+            tbody.innerHTML = '';
+            
+            plaintes.forEach(plainte => {
+                const tr = document.createElement('tr');
+                tr.onclick = () => showPlainteDetails(plainte.id);
+                tr.style.cursor = 'pointer';
+                
+                // Ajouter une classe en fonction du statut
+                let statutClass = '';
+                let statutText = '';
+                if (plainte.statut === 'En attente') {
+                    statutClass = 'status-pending';
+                    statutText = 'En attente';
+                } else if (plainte.statut === 'En cours') {
+                    statutClass = 'status-in-progress';
+                    statutText = 'En cours';
+                } else if (plainte.statut === 'Résolu') {
+                    statutClass = 'status-resolved';
+                    statutText = 'Résolu';
+                }
+                
+                tr.innerHTML = `
+                    <td>${plainte.id}</td>
+                    <td>${plainte.nom}</td>
+                    <td>${plainte.type}</td>
+                    <td>${plainte.date}</td>
+                    <td><span class="status-badge ${statutClass}">${statutText}</span></td>
+                    <td class="plainte-actions">
+                        <button class="btn btn-sm btn-warning" onclick="openEditModal(${plainte.id}); event.stopPropagation()">Modifier</button>
+                        <button class="btn btn-sm btn-primary" onclick="supprimerPlainte(${plainte.id}); event.stopPropagation()">Supprimer</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Afficher les détails d'une plainte
+        function showPlainteDetails(plainteId) {
+            const plainte = plaintes.find(p => p.id === plainteId);
+            if (!plainte) return;
+            
+            const detailContent = document.getElementById('detail-content');
+            detailContent.innerHTML = `
+                <p><strong>Nom complet:</strong> ${plainte.nom}</p>
+                <p><strong>Type de plainte:</strong> ${plainte.type}</p>
+                <p><strong>Date de dépôt:</strong> ${plainte.date}</p>
+                <p><strong>Description:</strong> ${plainte.description}</p>
+                <p><strong>Statut:</strong> ${plainte.statut}</p>
+                <p><strong>Date d'inspection:</strong> ${plainte.inspection}</p>
+            `;
+            
+            // Afficher les pièces jointes
+            const piecesJointesDetails = document.getElementById('pieces-jointes-details');
+            piecesJointesDetails.innerHTML = '';
+            
+            if (plainte.piecesJointes && plainte.piecesJointes.length > 0) {
+                plainte.piecesJointes.forEach(piece => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        <span>${piece.nom}</span>
+                        <a href="${piece.url}" download="${piece.nom}">Télécharger</a>
+                    `;
+                    piecesJointesDetails.appendChild(fileItem);
+                });
+            } else {
+                piecesJointesDetails.innerHTML = '<p>Aucune pièce jointe disponible pour cette plainte.</p>';
+            }
+            
+            document.getElementById('plainte-details').classList.remove('hidden');
+        }
+
+        // Masquer les détails d'une plainte
+        function hidePlainteDetails() {
+            document.getElementById('plainte-details').classList.add('hidden');
+        }
+
+        // Filtrer les plaintes selon la recherche
+        function filtrerPlaintes() {
+            const recherche = document.getElementById('recherche-plaintes').value.toLowerCase();
+            const lignes = document.querySelectorAll('#plaintes-body tr');
+            
+            lignes.forEach(ligne => {
+                const texteLigne = ligne.textContent.toLowerCase();
+                if (texteLigne.includes(recherche)) {
+                    ligne.style.display = '';
+                } else {
+                    ligne.style.display = 'none';
+                }
+            });
+        }
+
+        // Afficher la liste des utilisateurs
+        function afficherUtilisateurs() {
+            const tbody = document.getElementById('utilisateurs-body');
+            tbody.innerHTML = '';
+            
+            utilisateurs.forEach(utilisateur => {
+                const tr = document.createElement('tr');
+                
+                tr.innerHTML = `
+                    <td>${utilisateur.id}</td>
+                    <td>${utilisateur.nom} ${utilisateur.prenom}</td>
+                    <td>${utilisateur.email}</td>
+                    <td>${utilisateur.role}</td>
+                    <td>
+                        <button class="btn btn-sm">Modifier</button>
+                        <button class="btn btn-sm btn-primary">Supprimer</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Ouvrir le modal de modification
+        function openEditModal(plainteId) {
+            const plainte = plaintes.find(p => p.id === plainteId);
+            if (!plainte) return;
+            
+            selectedPlainteId = plainteId;
+            
+            document.getElementById('edit-plainte-id').value = plainte.id;
+            document.getElementById('edit-type-plainte').value = plainte.type;
+            document.getElementById('edit-description').value = plainte.description;
+            document.getElementById('edit-statut').value = plainte.statut;
+            document.getElementById('edit-date-inspection').value = plainte.inspection !== 'Non planifiée' ? plainte.inspection : '';
+            document.getElementById('edit-notes').value = plainte.notes || '';
+            
+            // Afficher les pièces jointes existantes
+            const fileList = document.getElementById('edit-file-list');
+            fileList.innerHTML = '';
+            
+            if (plainte.piecesJointes && plainte.piecesJointes.length > 0) {
+                plainte.piecesJointes.forEach(piece => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        <span>${piece.nom}</span>
+                        <a href="${piece.url}" download="${piece.nom}">Télécharger</a>
+                        <button onclick="supprimerPieceJointe(${plainteId}, '${piece.nom}'); event.preventDefault()">✕</button>
+                    `;
+                    fileList.appendChild(fileItem);
+                });
+            }
+            
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        // Fermer le modal de modification
+        function closeEditModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+            selectedPlainteId = null;
+        }
+
+        // Supprimer une pièce jointe
+        function supprimerPieceJointe(plainteId, nomFichier) {
+            const plainte = plaintes.find(p => p.id === plainteId);
+            if (!plainte || !plainte.piecesJointes) return;
+            
+            plainte.piecesJointes = plainte.piecesJointes.filter(p => p.nom !== nomFichier);
+            sauvegarderDonnees();
+            
+            // Mettre à jour l'affichage
+            if (selectedPlainteId === plainteId) {
+                openEditModal(plainteId);
+            }
+        }
+
+        // Supprimer une plainte
+        function supprimerPlainte(plainteId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette plainte ?')) {
+                plaintes = plaintes.filter(p => p.id !== plainteId);
+                sauvegarderDonnees();
+                afficherPlaintes();
+                hidePlainteDetails();
+            }
+        }
+
+        // Gestion des fichiers sélectionnés
+        document.getElementById('pieces-jointes').addEventListener('change', function(e) {
+            const files = e.target.files;
+            const fileList = document.getElementById('file-list');
+            fileList.innerHTML = '';
+            selectedFiles = [];
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                selectedFiles.push(file);
+                
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>${file.name}</span>
+                    <button onclick="supprimerFichierSelectionne(${i}); event.preventDefault()">✕</button>
+                `;
+                fileList.appendChild(fileItem);
+            }
+        });
+
+        // Supprimer un fichier sélectionné
+        function supprimerFichierSelectionne(index) {
+            selectedFiles.splice(index, 1);
+            const fileList = document.getElementById('file-list');
+            fileList.innerHTML = '';
+            
+            selectedFiles.forEach((file, i) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>${file.name}</span>
+                    <button onclick="supprimerFichierSelectionne(${i}); event.preventDefault()">✕</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        // Gestion des fichiers sélectionnés pour la modification
+        document.getElementById('edit-pieces-jointes').addEventListener('change', function(e) {
+            const files = e.target.files;
+            const fileList = document.getElementById('edit-file-list');
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>${file.name}</span>
+                    <button onclick="this.parentElement.remove(); event.preventDefault()">✕</button>
+                `;
+                fileList.appendChild(fileItem);
+            }
+        });
+
+        // Convertir un fichier en URL de données
+        function fileToDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Gestionnaire d'événement pour le formulaire de plainte
+        document.getElementById('plainte-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Convertir les fichiers en URLs de données
+            const piecesJointes = [];
+            for (const file of selectedFiles) {
+                try {
+                    const dataURL = await fileToDataURL(file);
+                    piecesJointes.push({
+                        nom: file.name,
+                        url: dataURL
+                    });
+                } catch (error) {
+                    console.error('Erreur lors de la lecture du fichier:', error);
+                }
+            }
+            
+            const nouvellePlainte = {
+                id: plaintes.length > 0 ? Math.max(...plaintes.map(p => p.id)) + 1 : 1,
+                nom: document.getElementById('nom').value,
+                type: document.getElementById('type-plainte').value,
+                date: document.getElementById('date-depot').value,
+                description: document.getElementById('description').value,
+                statut: "En attente",
+                inspection: document.getElementById('date-inspection').value || "Non planifiée",
+                piecesJointes: piecesJointes
+            };
+            
+            plaintes.push(nouvellePlainte);
+            sauvegarderDonnees();
+            
+            alert('Votre plainte a été enregistrée avec succès. Numéro de référence: ' + nouvellePlainte.id);
+            this.reset();
+            document.getElementById('file-list').innerHTML = '';
+            selectedFiles = [];
+            
+            // Définir la date du jour par défaut
+            const aujourdHui = new Date().toISOString().split('T')[0];
+            document.getElementById('date-depot').value = aujourdHui;
+            
+            // Retour à l'accueil
+            showSection('accueil');
+        });
+
+        // Gestionnaire d'événement pour le formulaire de modification
+        document.getElementById('edit-plainte-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const plainteId = parseInt(document.getElementById('edit-plainte-id').value);
+            const plainteIndex = plaintes.findIndex(p => p.id === plainteId);
+            
+            if (plainteIndex === -1) return;
+            
+            // Convertir les nouveaux fichiers en URLs de données
+            const filesInput = document.getElementById('edit-pieces-jointes');
+            const newPiecesJointes = [...plaintes[plainteIndex].piecesJointes];
+            
+            for (let i = 0; i < filesInput.files.length; i++) {
+                const file = filesInput.files[i];
+                try {
+                    const dataURL = await fileToDataURL(file);
+                    newPiecesJointes.push({
+                        nom: file.name,
+                        url: dataURL
+                    });
+                } catch (error) {
+                    console.error('Erreur lors de la lecture du fichier:', error);
+                }
+            }
+            
+            // Mettre à jour la plainte
+            plaintes[plainteIndex] = {
+                ...plaintes[plainteIndex],
+                type: document.getElementById('edit-type-plainte').value,
+                description: document.getElementById('edit-description').value,
+                statut: document.getElementById('edit-statut').value,
+                inspection: document.getElementById('edit-date-inspection').value || "Non planifiée",
+                piecesJointes: newPiecesJointes
+            };
+            
+            sauvegarderDonnees();
+            afficherPlaintes();
+            closeEditModal();
+            
+            alert('La plainte a été modifiée avec succès.');
+        });
+
+        // Gestionnaire d'événement pour le formulaire d'inscription
+        document.getElementById('inscription-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nouvelUtilisateur = {
+                id: utilisateurs.length > 0 ? Math.max(...utilisateurs.map(u => u.id)) + 1 : 1,
+                nom: document.getElementById('inscription-nom').value,
+                prenom: document.getElementById('inscription-prenom').value,
+                email: document.getElementById('inscription-email').value,
+                role: "Citoyen"
+            };
+            
+            utilisateurs.push(nouvelUtilisateur);
+            sauvegarderDonnees();
+            
+            alert('Inscription réussie. Bienvenue ' + nouvelUtilisateur.prenom + ' ' + nouvelUtilisateur.nom + '!');
+            this.reset();
+            
+            // Retour à l'accueil
+            showSection('accueil');
+        });
+
+        // Gestionnaire d'événement pour le formulaire de configuration
+        document.getElementById('config-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nouvelleCommune = document.getElementById('commune-config').value;
+            const nouveauTheme = document.getElementById('theme-config').value;
+            
+            document.getElementById('commune-name').textContent = nouvelleCommune;
+            appliquerTheme(nouveauTheme);
+            sauvegarderDonnees();
+            
+            alert('Configuration enregistrée avec succès!');
+        });
+
+        // Fermer le modal en cliquant sur le bouton de fermeture
+        document.querySelector('.close-modal').addEventListener('click', closeEditModal);
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            chargerDonnees();
+            showSection('accueil');
+            
+            // Définir la date du jour par défaut pour le formulaire de plainte
+            const aujourdHui = new Date().toISOString().split('T')[0];
+            document.getElementById('date-depot').value = aujourdHui;
+        });
+    </script>
+</body>
+</html>
